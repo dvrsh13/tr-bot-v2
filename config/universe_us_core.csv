@@ -1,0 +1,35 @@
+symbol,name,sector,yahoo_symbol,alpaca_symbol
+AAPL,Apple Inc,Technology,AAPL,AAPL
+MSFT,Microsoft Corp,Technology,MSFT,MSFT
+NVDA,NVIDIA Corp,Technology,NVDA,NVDA
+AMZN,Amazon.com Inc,Consumer Discretionary,AMZN,AMZN
+GOOGL,Alphabet Inc Class A,Communication Services,GOOGL,GOOGL
+META,META Platforms Inc,Communication Services,META,META
+TSLA,Tesla Inc,Consumer Discretionary,TSLA,TSLA
+BRKB,Berkshire Hathaway Inc Class B,Financials,BRK-B,BRK.B
+JPM,JPMorgan Chase & Co,Financials,JPM,JPM
+V,Visa Inc,Financials,V,V
+MA,Mastercard Inc,Financials,MA,MA
+XOM,Exxon Mobil Corp,Energy,XOM,XOM
+CVX,Chevron Corp,Energy,CVX,CVX
+UNH,UnitedHealth Group Inc,Health Care,UNH,UNH
+JNJ,Johnson & Johnson,Health Care,JNJ,JNJ
+PFE,Pfizer Inc,Health Care,PFE,PFE
+LLY,Eli Lilly and Co,Health Care,LLY,LLY
+KO,Coca-Cola Co,Consumer Staples,KO,KO
+PEP,PepsiCo Inc,Consumer Staples,PEP,PEP
+PG,Procter & Gamble Co,Consumer Staples,PG,PG
+WMT,Walmart Inc,Consumer Staples,WMT,WMT
+COST,Costco Wholesale Corp,Consumer Staples,COST,COST
+HD,Home Depot Inc,Consumer Discretionary,HD,HD
+MCD,McDonald's Corp,Consumer Discretionary,MCD,MCD
+DIS,Walt Disney Co,Communication Services,DIS,DIS
+NFLX,Netflix Inc,Communication Services,NFLX,NFLX
+CRM,Salesforce Inc,Technology,CRM,CRM
+ORCL,Oracle Corp,Technology,ORCL,ORCL
+AMD,Advanced Micro Devices Inc,Technology,AMD,AMD
+INTC,Intel Corp,Technology,INTC,INTC
+CSCO,Cisco Systems Inc,Technology,CSCO,CSCO
+BA,Boeing Co,Industrials,BA,BA
+CAT,Caterpillar Inc,Industrials,CAT,CAT
+GE,GE Aerospace,Industrials,GE,GE

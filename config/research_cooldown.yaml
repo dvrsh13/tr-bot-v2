@@ -1,0 +1,37 @@
+# Research settings: kill switch auto-resumes after cooldown (measures the
+# strategy across the full sample). NOT for live/paper operation — the runner
+# always uses halt semantics.
+mode: simulation
+
+data:
+  provider: parquet
+  cache_dir: data/cache
+  universe_path: config/universe_us_core.csv
+  start: "2019-01-01"
+
+backtest:
+  initial_capital: 100000
+  commission_bps: 1.0
+  slippage_bps: 2.0
+  rebalance_every: 21
+  max_positions: 10
+  max_position_weight: 0.15
+  target_vol_ann: 0.12
+  min_history_days: 280
+
+risk:
+  max_drawdown_kill: 0.10
+  order_notional_cap: 0.10
+  policy: cooldown
+  cooldown_days_after_kill: 63
+  on_violation: scale  # research only; the live runner always rejects
+
+strategy:
+  name: xs_momentum
+  params:
+    lookback: 252
+    skip: 21
+    top_n: 10
+
+orders:
+  enabled: false

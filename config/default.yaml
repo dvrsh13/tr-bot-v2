@@ -1,0 +1,34 @@
+# tr-bot-v2 default settings — SIMULATION on cached real data (parquet)
+mode: simulation
+
+data:
+  provider: parquet
+  cache_dir: data/cache
+  universe_path: config/universe_us_core.csv
+  start: "2019-01-01"
+
+backtest:
+  initial_capital: 100000
+  commission_bps: 1.0
+  slippage_bps: 2.0
+  rebalance_every: 21
+  max_positions: 10
+  max_position_weight: 0.15
+  max_gross_exposure: 1.0
+  target_vol_ann: 0.12
+  vol_lookback_days: 60
+  min_history_days: 280
+
+risk:
+  max_drawdown_kill: 0.10
+  order_notional_cap: 0.10
+
+strategy:
+  name: xs_momentum
+  params:
+    lookback: 252
+    skip: 21
+    top_n: 10
+
+orders:
+  enabled: false

@@ -1,0 +1,21 @@
+# Environments / tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Secrets — never commit
+.env
+.env.*
+*.key
+
+# Runtime state & caches (rebuildable)
+data/cache/
+state/*.db
+state/kill_switch.json
+reports/plots/
+logs/
+
+# OS noise
+.DS_Store
