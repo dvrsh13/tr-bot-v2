@@ -11,7 +11,7 @@ git remote add origin git@github.com:<you>/tr-bot-v2.git   # private repo
 git push -u origin main
 ```
 
-Local history: committed in milestones (see `git log --oneline`). Working tree
+Local history: one verified snapshot commit (`git log --oneline`). Working tree
 should be clean except gitignored runtime dirs (`data/cache/`, `state/`,
 `reports/plots/` — rebuildable, never pushed).
 
