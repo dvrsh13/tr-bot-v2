@@ -243,6 +243,28 @@ def cmd_selftest(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_sync_state(args) -> int:
+    """Push local SQLite state to Turso (cloud mirror the dashboard reads)."""
+    from trbot.state import StateStore
+    from trbot.state_turso import TursoStateStore
+
+    local = StateStore(args.db)
+    remote = TursoStateStore()  # reads TURSO_DATABASE_URL / TURSO_AUTH_TOKEN
+    pushed = 0
+    for _ts, equity, cash, pos_json in local._conn.execute(
+        "SELECT ts, equity, cash, positions_json FROM equity_snapshots ORDER BY ts ASC"
+    ).fetchall():
+        remote.record_equity(equity, cash, json.loads(pos_json))
+        pushed += 1
+    rid = remote.start_run("SYNC")
+    remote.finish_run(rid, "sync", 0, f"synced {pushed} snapshots from {args.db}")
+    remote.audit("state_sync", f"{pushed} equity snapshots pushed from local store")
+    console.print(f"[green]synced {pushed} equity snapshots -> Turso[/green] (run #{rid} recorded)")
+    remote.close()
+    local.close()
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(prog="trbot", description="tr-bot-v2 paper trading framework")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -279,6 +301,10 @@ def main() -> int:
 
     p = sub.add_parser("selftest", help="synthetic-data engine sanity")
     p.set_defaults(fn=cmd_selftest)
+
+    p = sub.add_parser("sync-state", help="push local SQLite state to Turso")
+    p.add_argument("--db", default="state/trbot.db")
+    p.set_defaults(fn=cmd_sync_state)
 
     args = ap.parse_args()
     return args.fn(args)

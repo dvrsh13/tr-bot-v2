@@ -44,6 +44,21 @@ src/trbot/
   cli.py           trbot CLI
 ```
 
+## Dashboard (PWA, Vercel)
+
+`dashboard/` — "The Quote Board": a read-only, mobile-first PWA (installable on
+iPhone via Safari → Add to Home Screen). Reads the bot's state from Turso with a
+read-only token; renders a clearly-labeled DEMO dataset when credentials are
+absent. Deploy: `ORACLE-SETUP.md` §7 (vercel CLI or the `dashboard-deploy`
+GitHub Action). Design system recorded in `dashboard/DESIGN.md`.
+
+## Deployment (Oracle VM)
+
+`ORACLE-SETUP.md` is the complete path from account signup (including failure
+triage) to a running bot: VM provisioning, `deploy/bootstrap.sh` (idempotent),
+systemd timers, Turso wiring, monitoring (GitHub-Actions dead-man switch), and
+the disaster playbook.
+
 ## Data refresh
 
 `uv run python scripts/fetch_yahoo.py` refreshes the research snapshot (Yahoo,

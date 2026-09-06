@@ -1,0 +1,13 @@
+[Unit]
+Description=tr-bot-v2 daily paper cycle (after US close, weekdays)
+
+[Timer]
+# 21:10 UTC Mon-Fri = 15 min after the 20:00 UTC close; runs the daily cycle.
+# intraday cycles later: duplicate the timer with OnCalendar=*:0/15 and a
+# market-hours guard.
+OnCalendar=Mon..Fri *-*-* 21:10:00 UTC
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target

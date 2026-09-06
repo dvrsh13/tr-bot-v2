@@ -1,0 +1,33 @@
+name: dashboard-deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ["dashboard/**"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        working-directory: dashboard
+        run: npm ci
+      - name: Build check
+        working-directory: dashboard
+        run: npm run build
+        env:
+          # demo mode renders when absent — build must succeed without secrets
+          TURSO_DATABASE_URL: ""
+          TURSO_AUTH_TOKEN: ""
+      - name: Deploy to Vercel
+        working-directory: dashboard
+        run: npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

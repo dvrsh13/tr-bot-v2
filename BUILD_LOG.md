@@ -120,3 +120,68 @@ Led to the cooldown research policy + HWM-reset-on-resume design above.
 - **Local git commits at milestones; push deferred** (PUSH_CHECKLIST.md).
 - Isolation contract documented (ISOLATION.md): all deps in `.venv/`, no global installs, no secrets on disk,
   no processes left running, full disposal = two `rm -rf`.
+
+---
+
+# SESSION 2 — 2026-09-06 (operator awake; complete-all-phases sprint)
+
+Operator status: new Alpaca/Turso/Vercel accounts exist (keys NOT shared — env-driven);
+GitHub repo `dvrsh13/tr-bot-v2` live with push access; Oracle signup still blocked;
+Telegram + Healthchecks.io dropped by operator decision.
+
+## Phase 9 — Cloud state + monitoring (healthchecks replacement)
+
+- `state_turso.py`: TursoStateStore — pure-stdlib libSQL `/v2/pipeline` client, same surface
+  as the SQLite store; URL allowlist-style validation (https/libsql host only); mock-transport
+  tested (claims, runs, equity, audit). 6 tests.
+- `trbot sync-state` CLI: pushes local SQLite snapshots to Turso (idempotent claims).
+- `.github/workflows/monitor.yml`: dead-man switch on GitHub Actions — reads last run from
+  Turso twice an hour; stale > 49h or DB unreachable → opens/updates issue "🚨 Bot heartbeat
+  stale". Uses only existing services (operator decision: skip Healthchecks.io, skip Telegram).
+- `.env.example`: canonical secret inventory (Alpaca, Turso, order gate).
+
+## Phase 10 — Live-path verification with existing credentials
+
+- The old Alpaca MCP account's keys (config-local) were used EPHEMERALLY — in-process,
+  never printed, never persisted — for a read-only API check of `AlpacaBarsProvider`:
+  5 symbols × 672 bars, all 10 validation checks pass; daily-return parity vs the Yahoo
+  snapshot 0.999 (AAPL/MSFT). The first-party data path is verified against the real API.
+- Operator note honored: the deployment account will be a NEW Alpaca account; no
+  credentials are wired anywhere — everything reads env at runtime.
+
+## Phase 11 — Dashboard (impeccable skill, code-led)
+
+- PRODUCT.md written via init (unattended: inferred from brief, assumptions labeled).
+- concept-seed roll (seed 10580d2d): assigned grounded candidate #4 = **THE QUOTE BOARD**
+  (exchange quote-board/ticker-tape ledger). Challenger verdicts: split-flap concourse
+  COMPETITIVE (donates flap cascade + amber lamp grammar); CRT-arcade, civic-bureau DECLINED
+  (donate palette-law and hairline discipline). Code-led build (no image generator on this
+  machine — comp round skipped by contract, stated).
+- Next.js 15 + hand-rolled board CSS (no UI deps): lacquered near-black ground, steel
+  hairline ruled grid, Barlow Condensed board lettering, IBM Plex Mono tabular digits,
+  lamp grammar (green ok / amber warning-reserved / red kill, blink), stamped PAPER badge,
+  tape strip (marquee, paused on hover + reduced-motion), flap-cascade digits (bounded
+  roll, always settles), event rows clack-in staggered. PWA: manifest + apple meta +
+  minimal SW + generated board icons (pure-python PNG writer, provenance in-repo).
+- Demo mode: labeled lamp-amber DEMO band when Turso creds absent (honest-state rule).
+- **Bugs caught by screenshot verification:** (1) flap cells never settled for letters
+  (roll alphabet lacked letters → "6IVE") — fixed with bounded-roll-then-settle;
+  (2) 390px horizontal overflow reports — root-caused to headless Chrome clamping layout
+  width ~500 and cropping the canvas; verified by width-bisect (350/390/500 identical
+  layouts), re-captured with puppeteer device-metrics override (true 390 render clean).
+- Verification: production build green (106 kB first load); true-viewport captures at
+  390 (full page) + 1440 in `.impeccable/review/`; mechanical detector: no findings.
+- Finish review: dispatched to the shipped reviewer (first attempt hit a model
+  concurrency limit; retried once per contract).
+
+## Phase 12 — Deployment readiness
+
+- `ORACLE-SETUP.md`: signup-failure triage, home-region decision (permanent), PAYG,
+  VM provisioning, capacity playbook, bootstrap → secrets → timers → Turso wiring →
+  Vercel deploy → monitoring → disaster playbook.
+- `deploy/bootstrap.sh` (idempotent VM bootstrap: user, ufw, unattended-upgrades, uv,
+  clone+install+pytest gate, systemd user units, env scaffold),
+  `deploy/systemd/trbot-paper.{service,timer}` (daily post-close cycle, Persistent),
+  `config/paper.yaml` (live semantics: halt + reject; mom_def_blend per REPORT.md),
+  `.github/workflows/dashboard-deploy.yml` (Vercel on push, secrets or CLI path).
+- README/ISOLATION/TODO updated; full suite green; ruff clean.

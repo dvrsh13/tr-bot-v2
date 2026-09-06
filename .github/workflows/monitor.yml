@@ -1,0 +1,85 @@
+name: heartbeat-monitor
+
+# Dead-man switch (healthchecks.io replacement): on a schedule, read the bot's
+# last run from Turso; if the heartbeat is stale (or the DB errors), open/update
+# a GitHub issue. Uses only existing free services (GitHub Actions + Turso).
+
+on:
+  schedule:
+    - cron: "23,53 * * * *" # twice an hour, off-peak minutes
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+concurrency:
+  group: heartbeat-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check bot heartbeat in Turso
+        id: hb
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          MAX_STALE_HOURS: "49" # daily cycles: ~2 market days of silence = dead
+        run: |
+          pip install requests --quiet
+          python3 - <<'PY'
+          import os, sys, json, datetime
+          import requests
+          url = os.environ["TURSO_DATABASE_URL"].rstrip("/")
+          if url.startswith("libsql://"):
+              from urllib.parse import urlparse
+              url = "https://" + urlparse(url).hostname
+          tok = os.environ["TURSO_AUTH_TOKEN"]
+          max_h = float(os.environ["MAX_STALE_HOURS"])
+          def q(sql):
+              r = requests.post(url + "/v2/pipeline",
+                  headers={"Authorization": f"Bearer {tok}"},
+                  json={"requests": [{"type": "execute", "stmt": {"sql": sql}},
+                                     {"type": "close", "stmt": None}]}, timeout=20)
+              r.raise_for_status()
+              res = r.json()["results"][0]
+              if res.get("type") == "error":
+                  raise RuntimeError(res["error"])
+              result = res["response"]["result"]
+              cols = [c["name"] for c in result["cols"]]
+              return [dict(zip(cols, [v.get("value") for v in row])) for row in result["rows"]]
+          now = datetime.datetime.now(datetime.timezone.utc)
+          try:
+              runs = q("SELECT started_at, status, exit_code FROM runs ORDER BY run_id DESC LIMIT 1")
+              if not runs:
+                  print("::error::no runs recorded yet"); print("stale=true"); sys.exit(0)
+              last = datetime.datetime.fromisoformat(runs[0]["started_at"])
+              age_h = (now - last).total_seconds() / 3600
+              print(f"last run: {last.isoformat()} status={runs[0]['status']} age={age_h:.1f}h")
+              print(f"stale={'true' if age_h > max_h else 'false'}")
+          except Exception as e:
+              print(f"::error::turso unreachable: {e}")
+              print("stale=true")
+          PY
+      - name: Open issue if stale
+        if: steps.hb.outputs.stale == 'true' || failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'heartbeat-stale' });
+            const body = `Bot heartbeat is stale (checked ${new Date().toISOString()}).
+            Expected: paper runner cycles at least daily and writes runs to Turso.
+            Check: VM alive? systemd timer firing? TURSO credentials valid?
+            Re-verify on the dashboard. This issue auto-reopens while stale.`;
+            if (issues.length) {
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issues[0].number, body });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: '🚨 Bot heartbeat stale', body, labels: ['heartbeat-stale'] });
+            }

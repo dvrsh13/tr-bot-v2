@@ -1,0 +1,17 @@
+[Unit]
+Description=tr-bot-v2 paper cycle (one fail-closed cycle per invocation)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/trbot
+# Fail-closed exit codes: 2 creds | 3 state | 4 data | 5 recon | 6 broker
+ExecStart=/home/trbot/.local/bin/uv run --frozen python -m trbot.runner --config /opt/trbot/config/paper.yaml
+EnvironmentFile=%h/.env
+# one order chunk per (symbol, side, day) is claimed durably; retries of a
+# failed cycle are safe because claims are checked before submission
+TimeoutStartSec=600
+
+[Install]
+WantedBy=default.target

@@ -11,6 +11,7 @@ noted below. After development/deployment ends, follow §3 to remove everything.
 | Python venv (ALL deps: pandas, numpy, scipy, pydantic, yfinance, pytest, ruff, …) | `tr-bot-v2/.venv/` | `rm -rf .venv` (or delete the project folder) |
 | uv lock + project metadata | `pyproject.toml`, `uv.lock`, `.python-version` | delete with project |
 | Cached market data (34 parquet snapshots) | `tr-bot-v2/data/cache/` | delete with project (gitignored) |
+| Dashboard node_modules + build | `tr-bot-v2/dashboard/{node_modules,.next}/` | delete with project (gitignored) |
 | Trial ledger, local state DB | `tr-bot-v2/state/` | delete with project (gitignored) |
 | Backtest plots / reports | `tr-bot-v2/reports/` | delete with project (gitignored) |
 | Local git history | `tr-bot-v2/.git/` | delete with project |

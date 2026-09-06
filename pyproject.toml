@@ -49,6 +49,7 @@ ignore = ["S101"]  # assert use in tests is fine; audited per-file below
 # S105: env var NAMES (not passwords); S310: urlopen on code-level allowlisted https hosts
 "src/trbot/config.py" = ["S105"]
 "src/trbot/data/providers.py" = ["S310"]
+"src/trbot/state_turso.py" = ["S310"]
 "src/trbot/execution/alpaca_paper.py" = ["S310"]
 
 [tool.pytest.ini_options]

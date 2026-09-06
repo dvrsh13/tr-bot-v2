@@ -1,0 +1,28 @@
+# VM paper-mode settings (used by deploy/systemd/trbot-paper.service)
+mode: paper
+
+data:
+  universe_path: config/universe_us_core.csv
+  start: "2019-01-01"
+
+backtest:
+  initial_capital: 100000
+  commission_bps: 1.0
+  slippage_bps: 2.0
+  max_positions: 10
+  max_position_weight: 0.15
+
+risk:
+  max_drawdown_kill: 0.10
+  order_notional_cap: 0.10
+  policy: halt            # live semantics: halt + page, never auto-resume
+  on_violation: reject    # live semantics: fail closed
+
+strategy:
+  name: mom_def_blend     # REPORT.md: best Sharpe/DD tradeoff — see §"what goes live first"
+  params:
+    top_n: 8
+    defense_weight: 0.3
+
+orders:
+  enabled: false          # double gate: also set TRBOT_ORDERS_ENABLED=true in ~/.env

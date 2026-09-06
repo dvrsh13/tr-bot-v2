@@ -1,16 +1,17 @@
 # tr-bot-v2 — Task Tracker
 
 ## Now
-- [ ] **User (morning):** push the repo → [PUSH_CHECKLIST.md](PUSH_CHECKLIST.md) (2 commands)
-- [ ] **User:** create accounts (PLAN.md §4) — Oracle (region + PAYG decision), Alpaca paper keys, Turso, Telegram, Healthchecks.io
-- [ ] **User:** answer open decisions in PLAN.md §7
+- [x] Repo pushed (dvrsh13/tr-bot-v2)
+- [x] Turso + Vercel + new Alpaca accounts created (keys stay env-side — never shared in chat)
+- [ ] **User:** Oracle signup (blocked) → follow [ORACLE-SETUP.md](ORACLE-SETUP.md) §1 triage
+- [ ] **User:** dashboard deploy → [ORACLE-SETUP.md](ORACLE-SETUP.md) §7 (2 paths: CLI or GH Action secrets)
+- [ ] **User:** new Alpaca paper keys → set as env on the VM when it exists (`.env.example` is the inventory)
 
-## Next (after accounts)
-- [ ] Phase 0→1: OCI CLI wiring + VM bootstrap script (hardened Ubuntu ARM)
-- [ ] Phase 2 live-fire: read-only Alpaca cycles + one tiny paper order
-- [ ] Phase 3: systemd timers, Telegram, Healthchecks; Alpaca-vs-Yahoo data parity check
-- [ ] Phase 4: dashboard (separate task, reads Turso — contract in docs/DB_SCHEMA.md)
-- [ ] Phase 5: hardening drills
+## Next (only Oracle blocks these)
+- [ ] VM: run `deploy/bootstrap.sh` → paste secrets → enable `trbot-paper.timer` (ORACLE-SETUP.md §3-5)
+- [ ] Live-fire: watch 3+ read-only cycles, then open the order double-gate (PLAN.md protocol)
+- [ ] Turso dual-write on the VM + `trbot sync-state` backfill → dashboard goes live (§6)
+- [ ] Monitoring on: add TURSO_* secrets to GitHub repo → heartbeat-monitor.yml arms itself (§8)
 
 ## Strategy track
 - [x] Academic literature scan → [STRATEGY-RESEARCH.md](STRATEGY-RESEARCH.md) (25 papers, API-verified)
