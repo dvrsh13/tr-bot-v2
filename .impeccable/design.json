@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-06T14:35:00Z",
+  "title": "Design System: TR-BOT/2 Board",
+  "extensions": {
+    "colorMeta": {
+      "ground": { "role": "neutral", "displayName": "Lacquered Ground", "canonical": "#0f1113", "tonalRamp": ["#0f1113", "#101315", "#121518", "#191d21"] },
+      "ink": { "role": "primary", "displayName": "Ivory Paint", "canonical": "#e8e4d8", "tonalRamp": ["#e8e4d8", "#a5a196", "#8a867c"] },
+      "lamp-ok": { "role": "primary", "displayName": "Board Green", "canonical": "#35c56e" },
+      "lamp-warn": { "role": "secondary", "displayName": "Signal Amber", "canonical": "#e5a50a" },
+      "lamp-kill": { "role": "secondary", "displayName": "Kill Red", "canonical": "#e5484d" },
+      "rule": { "role": "neutral", "displayName": "Steel Hairline", "canonical": "#23282d" },
+      "rule-strong": { "role": "neutral", "displayName": "Bright Hairline", "canonical": "#2f363c" }
+    },
+    "typographyMeta": {
+      "figure-hero": { "displayName": "Figure Hero", "purpose": "The equity figure — largest type on the board; cents de-emphasized." },
+      "status-label": { "displayName": "Status Label", "purpose": "The flap-set state word (LIVE / STALE / KILL SWITCH) in the status band." },
+      "ticker": { "displayName": "Ticker", "purpose": "Tape items and the PAPER badge; condensed caps always tracked." },
+      "board-cap": { "displayName": "Board Cap", "purpose": "Section headers and captions; the row is the header." },
+      "digits": { "displayName": "Digits", "purpose": "Every numeral, timestamp and note — tabular-nums mandatory." }
+    },
+    "shadows": [
+      { "name": "lamp-halo", "value": "0 0 10px 1px color-mix(in srgb, var(--lamp-color) 45%, transparent)", "purpose": "The only shadow in the system: the status lamp glowing in its own state color (7px variant on event lamps)." }
+    ],
+    "motion": [
+      { "name": "tape-roll", "value": "36s linear infinite (translateX(-50%), seamless half-track)", "purpose": "Key-figure tape; pauses on hover; off under prefers-reduced-motion." },
+      { "name": "lamp-blink", "value": "1.4s steps(2, start) to 0.35 opacity", "purpose": "Kill lamp only." },
+      { "name": "row-clack", "value": "0.34s cubic-bezier(0.2, 0.9, 0.3, 1) — 5px drop + 1.5px blur clearing, stagger 0.05–0.33s", "purpose": "Event rows entering the tape log." },
+      { "name": "flap-cascade", "value": "45ms glyph steps, bounded 4–7 steps per cell, 60ms per-character stagger, settle-on-target", "purpose": "Signature interaction: status word, UTC clock, last-cycle time." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "390px (design viewport)" },
+      { "name": "desktop", "value": "1024px — board widens 520px → 780px, position columns widen, wt-bar goes fluid" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Paper Badge",
+      "kind": "chip",
+      "refersTo": "badge-paper",
+      "description": "Stamped header cell: lamp dot + PAPER TRADING caps. Always visible — the surface never represents live trading.",
+      "html": "<span class=\"ds-badge\">PAPER TRADING</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 7px; padding: 0 12px; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; color: #e8e4d8; background: #0f1113; border-right: 1px solid #23282d; white-space: nowrap; } .ds-badge::before { content: \"\"; width: 8px; height: 8px; border-radius: 50%; background: #e8e4d8; }"
+    },
+    {
+      "name": "Status Lamp",
+      "kind": "custom",
+      "refersTo": "lamp-ok",
+      "description": "10px state dot with self-colored halo; green ok, amber attention (blinks never), red kill (blinks 1.4s).",
+      "html": "<span class=\"ds-lamp ds-lamp--ok\" aria-hidden=\"true\"></span>",
+      "css": ".ds-lamp { --lamp-color: #35c56e; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--lamp-color); box-shadow: 0 0 10px 1px color-mix(in srgb, var(--lamp-color) 45%, transparent); } .ds-lamp--warn { --lamp-color: #e5a50a; } .ds-lamp--kill { --lamp-color: #e5484d; animation: ds-blink 1.4s steps(2, start) infinite; } @keyframes ds-blink { 50% { opacity: 0.35; } } @media (prefers-reduced-motion: reduce) { .ds-lamp--kill { animation: none; } }"
+    },
+    {
+      "name": "Flap Cell",
+      "kind": "custom",
+      "refersTo": "flap-cell",
+      "description": "Split-flap digit tile with hinge line; cells roll glyphs and settle on target when state changes.",
+      "html": "<span class=\"ds-flap\" aria-label=\"12:34\"><span class=\"ds-flap-cell\" aria-hidden=\"true\">1</span><span class=\"ds-flap-cell\" aria-hidden=\"true\">2</span><span class=\"ds-flap-cell\" aria-hidden=\"true\">:</span><span class=\"ds-flap-cell\" aria-hidden=\"true\">3</span><span class=\"ds-flap-cell\" aria-hidden=\"true\">4</span></span>",
+      "css": ".ds-flap { display: inline-flex; gap: 2px; } .ds-flap-cell { position: relative; display: inline-block; min-width: 0.72em; padding: 2px 4px; background: #191d21; border: 1px solid #23282d; border-radius: 3px; text-align: center; overflow: hidden; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 500; font-size: 13px; color: #e8e4d8; font-variant-numeric: tabular-nums; } .ds-flap-cell::after { content: \"\"; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(15, 17, 19, 0.85); }"
+    },
+    {
+      "name": "Event Row",
+      "kind": "card",
+      "refersTo": "event-row",
+      "description": "Ruled tape-log row: 7px state lamp, tabular HH:MM, caps event name over ellipsized detail.",
+      "html": "<div class=\"ds-event\"><span class=\"ds-event-lamp\" aria-hidden=\"true\"></span><span class=\"ds-event-time\">10:47</span><span class=\"ds-event-body\"><span class=\"ds-event-name\">CYCLE FINISH</span><span class=\"ds-event-detail\">ok exit=0 submitted 3 orders</span></span></div>",
+      "css": ".ds-event { display: grid; grid-template-columns: 14px 62px minmax(0, 1fr); gap: 8px; align-items: baseline; padding: 9px 16px; border-bottom: 1px solid #23282d; font-family: 'IBM Plex Mono', ui-monospace, monospace; } .ds-event-lamp { width: 7px; height: 7px; border-radius: 50%; background: #35c56e; align-self: center; } .ds-event-time { font-size: 11px; color: #8a867c; font-variant-numeric: tabular-nums; } .ds-event-name { display: block; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 12.5px; letter-spacing: 0.14em; color: #e8e4d8; } .ds-event-detail { display: block; margin-top: 2px; font-size: 11.5px; color: #a5a196; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quote Board",
+    "overview": "The dashboard is one dark lacquered surface in the manner of an exchange quote board: every fact lives in a ruled row, every row obeys fixed columns, and nothing floats. The 1px hairline grid is the entire composition. The bot's state reads like a listing on the board, and when the bot goes quiet, the board says so in lamp grammar instead of going blank. Density is high but calm: warm ivory ink on near-black steel, tabular monospaced numerals, condensed caps tickers, and exactly three chromatic voices — the lamps.",
+    "keyCharacteristics": [
+      "One continuous ruled surface; sections are bands separated by 1px hairlines, not stacked cards.",
+      "Lamp grammar: green ok/up, amber attention (reserved by law), red kill (blinking).",
+      "Every numeral in IBM Plex Mono tabular-nums; every label in tracked Barlow Condensed caps.",
+      "The flap cascade is the signature interaction; motion is mechanical and stepped.",
+      "Read-only by contract — the board states, the operator acts in the repo."
+    ],
+    "rules": [
+      { "name": "The Amber Register Rule", "body": "Amber is the attention register — warnings, the DEMO band, focus, selection — and nothing else. If amber is on screen, something needs looking at.", "section": "colors" },
+      { "name": "The Two-Weight Hairline Rule", "body": "All structure is 1px rules in exactly two weights (#23282d / #2f363c). Never thicker, never a different gray.", "section": "elevation" },
+      { "name": "The Ink Ladder Rule", "body": "Three ivory steps: full paint, dimmed, etched (#8a867c floor for small text — legibility, not preference).", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "Barlow Condensed speaks labels; IBM Plex Mono speaks everything numeric or annotative. Never crossed.", "section": "typography" },
+      { "name": "Columns Never Move", "body": "Table columns are fixed; wider viewports widen the grid, never reflow, stack, or hide columns.", "section": "layout" },
+      { "name": "The Only Glow Is a Live Lamp", "body": "box-shadow exists once: the lamp's own halo. Surfaces never cast shadows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use the lamp grammar for every state; a colored pixel is always a state.",
+      "Do set every numeral in tabular mono, right-aligned in tables.",
+      "Do render system truth (stale, kill, demo) even when ugly.",
+      "Do honor prefers-reduced-motion for every animation."
+    ],
+    "donts": [
+      "Don't use cards, glass, gradients-as-chrome, or surface shadows.",
+      "Don't use amber as decoration or brand accent.",
+      "Don't add icon fonts, unicode glyphs, or emoji — authored inline SVG only.",
+      "Don't introduce write affordances — the board is read-only."
+    ]
+  }
+}

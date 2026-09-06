@@ -22,7 +22,7 @@ export function FlapDigits({ value, className }: { value: string; className?: st
     if (prev.current !== value) {
       prev.current = value;
       setSettled(false);
-      const t = setTimeout(() => setSettled(true), 60 * Math.min(chars.length, 8) + 150);
+      const t = setTimeout(() => setSettled(true), chars.length * 60 + 8 * 45 + 150);
       return () => clearTimeout(t);
     }
     setSettled(true);

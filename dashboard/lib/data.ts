@@ -95,11 +95,13 @@ function parsePositions(posJson: string | null): Position[] {
   }
 }
 
-function assemble({ run, snaps, events, kill }: {
+function assemble({ run, snaps, events, kill, resume, lastFinish }: {
   run: Record<string, unknown> | undefined;
   snaps: Record<string, unknown>[];
   events: Record<string, unknown>[];
   kill: Record<string, unknown> | undefined;
+  resume: Record<string, unknown> | undefined;
+  lastFinish: Record<string, unknown> | undefined;
 }): BoardData {
   const lastSnap = snaps.at(-1);
   const firstSnap = snaps[0];
@@ -109,7 +111,15 @@ function assemble({ run, snaps, events, kill }: {
     : null;
   const equityNow = lastSnap ? Number(lastSnap.equity) : null;
   const equityStart = firstSnap ? Number(firstSnap.equity) : null;
-  const killDetail = kill ? String(kill.detail ?? "") : "";
+  // Kill-switch honesty: a kill is ACTIVE only while nothing proves recovery —
+  // a cooldown/resume audit entry or any finished cycle after the kill clears
+  // it. Event NAME carries the signal, never the detail text.
+  const killTs = kill?.ts ? new Date(String(kill.ts)).getTime() : null;
+  const recoveryTs = Math.max(
+    resume?.ts ? new Date(String(resume.ts)).getTime() : 0,
+    lastFinish?.ts ? new Date(String(lastFinish.ts)).getTime() : 0,
+  );
+  const killActive = killTs !== null && killTs > recoveryTs;
   return {
     demo: false,
     fetchedAt: new Date().toISOString(),
@@ -137,7 +147,7 @@ function assemble({ run, snaps, events, kill }: {
       event: String(e.event),
       detail: String(e.detail ?? ""),
     })),
-    killActive: /kill/i.test(killDetail) ? true : false,
+    killActive,
   };
 }
 
@@ -146,7 +156,7 @@ export async function getBoardData(): Promise<BoardData> {
   const token = process.env.TURSO_AUTH_TOKEN;
   if (!url || !token) return demoData();
   try {
-    const [runs, snaps, events, kill] = await Promise.all([
+    const [runs, snaps, events, kill, resume, lastFinish] = await Promise.all([
       tursoQuery<Record<string, unknown>>(url, token,
         "SELECT started_at, status, exit_code, mode FROM runs ORDER BY run_id DESC LIMIT 1"),
       tursoQuery<Record<string, unknown>>(url, token,
@@ -154,13 +164,19 @@ export async function getBoardData(): Promise<BoardData> {
       tursoQuery<Record<string, unknown>>(url, token,
         "SELECT ts, event, detail FROM audit_log ORDER BY id DESC LIMIT 12"),
       tursoQuery<Record<string, unknown>>(url, token,
-        "SELECT ts, event, detail FROM audit_log WHERE event LIKE '%kill%' ORDER BY id DESC LIMIT 1"),
+        "SELECT ts, event, detail FROM audit_log WHERE event LIKE '%kill%' OR detail LIKE '%kill%' OR detail LIKE '%drawdown%' ORDER BY id DESC LIMIT 1"),
+      tursoQuery<Record<string, unknown>>(url, token,
+        "SELECT ts, event, detail FROM audit_log WHERE event LIKE '%cooldown%' OR detail LIKE '%resumed%' ORDER BY id DESC LIMIT 1"),
+      tursoQuery<Record<string, unknown>>(url, token,
+        "SELECT ts, event, detail FROM audit_log WHERE event = 'cycle_finish' ORDER BY id DESC LIMIT 1"),
     ]);
     return assemble({
       run: runs[0],
       snaps: snaps.reverse(),
       events,
       kill: kill[0],
+      resume: resume[0],
+      lastFinish: lastFinish[0],
     });
   } catch {
     return { ...demoData(), demo: true };
@@ -207,8 +223,8 @@ export function demoData(): BoardData {
       { ts: iso(now - 3_600_000 * 2.2), event: "cycle_finish", detail: "ok exit=0 submitted 3 orders" },
       { ts: iso(now - 3_600_000 * 2.3), event: "order_submitted", detail: "AAPL buy qty=41.2" },
       { ts: iso(now - 3_600_000 * 2.3), event: "risk_decision", detail: "[APPROVED] approved 10 positions, gross 0.980" },
+      { ts: iso(now - 3_600_000 * 24.5), event: "cooldown_expired", detail: "trading resumed, HWM reset" },
       { ts: iso(now - 3_600_000 * 26), event: "kill_switch", detail: "drawdown -10.4% breached -10% threshold" },
-      { ts: iso(now - 3_600_000 * 26 + 5_400_000), event: "cooldown_expired", detail: "trading resumed, HWM reset" },
     ],
     killActive: false,
   };

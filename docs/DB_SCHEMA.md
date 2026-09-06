@@ -32,6 +32,8 @@ CREATE TABLE runs (
 );
 
 -- Equity snapshots for the dashboard (written per cycle)
+-- positions_json: {"SYM": market_value, ...} — values only today; qty joins
+-- this object when the position-sync phase lands (dashboard is value-first)
 CREATE TABLE equity_snapshots (
     ts             TEXT NOT NULL,
     equity         REAL NOT NULL,

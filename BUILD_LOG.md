@@ -185,3 +185,21 @@ Telegram + Healthchecks.io dropped by operator decision.
   `config/paper.yaml` (live semantics: halt + reject; mom_def_blend per REPORT.md),
   `.github/workflows/dashboard-deploy.yml` (Vercel on push, secrets or CLI path).
 - README/ISOLATION/TODO updated; full suite green; ruff clean.
+
+## Phase 13 — Finish review + documentation (impeccable contract closed)
+
+- Shipped finish-reviewer verdict on first review: **fix** (2 major, 8 minor). All ten applied
+  in one batch: kill-latch state honesty (kill active only until a resume/newer cycle proves
+  recovery; event-name matched, never detail text), truthful footer data age, flap settle
+  timeout covering the last cell, monotonic demo tape, ink-3 lifted to ≥4.5:1, seamless tape
+  loop, QTY adaptation recorded against the DB contract, desktop 780px ruled-grid widening,
+  AutoRefresh on focus/visibility, maskable icon safe-zone variant.
+- Recaptured (puppeteer device-metrics, true 390/1440) and returned for verdict pass:
+  **ship** — all 10 fix scores **resolved**, no regressions.
+- Documenter: DESIGN.md + .impeccable/design.json sidecar (schemaVersion 2) recorded from the
+  built world. NOTE: the documenter's first dispatch errored (model concurrency limit) AFTER
+  writing DESIGN.md; the sidecar was completed in-thread from the shipped code per the skill's
+  degraded path — substitution disclosed here.
+- Headless-Chrome lesson recorded: old/new headless clamps layout width ~500 and crops the
+  canvas at the requested window size; width-bisect (350/390/500 identical layouts) proved the
+  board CSS correct; captures must use puppeteer device-metrics overrides.

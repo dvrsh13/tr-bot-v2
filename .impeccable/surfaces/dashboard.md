@@ -42,3 +42,12 @@ unfinished; this build ends with the finish review, the verdict, DESIGN.md, and 
 carrying its provenance.
 
 Unresolved: none blocking build; reviewer may re-open.
+
+## Review adaptations (recorded)
+
+- **QTY column deferred with citation** (finish review): `positions_json`
+  carries symbol→market-value only (DB contract, docs/DB_SCHEMA.md); qty ships
+  with the position-sync phase. Positions render SYMBOL/VALUE/WT% at every
+  width; desktop widens the ruled grid instead.
+- **SINCE START** spans the last 400 equity snapshots (dashboard window) —
+  exact for the daily-cycle cadence; comment recorded in lib/data.ts.

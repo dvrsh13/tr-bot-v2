@@ -1,4 +1,5 @@
 import { FlapDigits } from "@/components/FlapDigits";
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { ArrowDown, ArrowUp, LampDot } from "@/components/Arrow";
 import { boardStatus, fmtAgo, getBoardData, type BoardData } from "@/lib/data";
 
@@ -65,6 +66,7 @@ export default async function Board() {
 
   return (
     <main className="board">
+      <AutoRefresh />
       <header className="board-head">
         <span className="badge-paper">
           <LampDot />PAPER TRADING
@@ -78,7 +80,7 @@ export default async function Board() {
       <div className="tape" aria-hidden="true">
         <div className="tape-track">
           {[0, 1].map((dup) => (
-            <span key={dup} style={{ display: "inline-flex", gap: 42 }}>
+            <span key={dup} className="tape-copy">
               {tape.map((t, i) => (
                 <span className="tape-item" key={i}>
                   {t.label}
@@ -186,7 +188,8 @@ export default async function Board() {
       <footer className="board-foot">
         <span className="ro">READ-ONLY</span>
         <span>
-          data {fmtAgo(d.fetchedAt)} · {d.demo ? "demo" : "turso"}
+          data {fmtAgo(d.equity?.ts ?? d.lastRun?.startedAt ?? d.fetchedAt)} ·{" "}
+          {d.demo ? "demo" : "turso"}
         </span>
       </footer>
     </main>

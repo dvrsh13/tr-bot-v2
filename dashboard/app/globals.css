@@ -9,7 +9,7 @@
   --rule-strong: #2f363c;
   --ink: #e8e4d8; /* board paint, warm ivory */
   --ink-2: #a5a196;
-  --ink-3: #6d6a62;
+  --ink-3: #8a867c; /* ≥4.5:1 on --ground for small text */
   --lamp-ok: #35c56e;
   --lamp-warn: #e5a50a;
   --lamp-kill: #e5484d;
@@ -59,6 +59,7 @@ body {
 /* ---- board frame ---- */
 
 .board {
+  width: 100%;
   max-width: 520px;
   overflow-x: clip;
   margin: 0 auto;
@@ -140,7 +141,6 @@ body {
 
 .tape-track {
   display: inline-flex;
-  gap: 42px;
   padding: 7px 0 6px;
   animation: tape-roll 36s linear infinite;
   will-change: transform;
@@ -157,6 +157,12 @@ body {
   to {
     transform: translateX(-50%);
   }
+}
+
+.tape-copy {
+  display: inline-flex;
+  gap: 42px;
+  padding-inline-end: 42px; /* seamless loop: half the track == one copy */
 }
 
 .tape-item {
@@ -571,5 +577,22 @@ body {
   }
   .event-row {
     animation: none;
+  }
+}
+
+/* ---- desktop: widen the ruled grid, keep the board grammar ---- */
+@media (min-width: 1024px) {
+  .board {
+    max-width: 780px;
+  }
+  .positions-grid.cols3 {
+    grid-template-columns: minmax(0, 1fr) 140px 96px;
+  }
+  .wt-bar {
+    width: 100%;
+    max-width: 180px;
+  }
+  .equity-figure {
+    font-size: 42px;
   }
 }
